@@ -14,7 +14,7 @@ services:
     autoDeploy: true
 
   # Frontend Service
-  - type: static
+  - type: site
     name: connecthub-frontend
     env: static
     buildCommand: cd frontend && npm install && npm run build
