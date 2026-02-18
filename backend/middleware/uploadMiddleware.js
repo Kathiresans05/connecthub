@@ -1,10 +1,16 @@
 import multer from 'multer';
 import path from 'path';
+import os from 'os';
 
 // Configure storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        // Use system temp directory in production/Vercel (read-only filesystem workaround)
+        // Otherwise use local uploads directory
+        const uploadPath = (process.env.NODE_ENV === 'production' || process.env.VERCEL)
+            ? os.tmpdir()
+            : 'uploads/';
+        cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);

@@ -24,9 +24,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Create uploads directory if it doesn't exist
+// Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir);
+try {
+    if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir);
+    }
+} catch (error) {
+    console.warn('⚠️ Could not create uploads directory (likely read-only filesystem):', error.message);
 }
 
 // Initialize Express app
@@ -90,8 +95,9 @@ app.use(errorHandler);
 // Start server
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-    console.log(`
+if (process.env.NODE_ENV !== 'production') {
+    server.listen(PORT, () => {
+        console.log(`
 ╔═══════════════════════════════════════╗
 ║   🚀 ConnectHub Server Running       ║
 ║   📍 Port: ${PORT}                     
@@ -99,10 +105,15 @@ server.listen(PORT, () => {
 ║   📡 Socket.io: Enabled              ║
 ╚═══════════════════════════════════════╝
   `);
-});
+    });
+}
+
+export default app;
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
     console.error('❌ Unhandled Rejection:', err);
-    server.close(() => process.exit(1));
+    if (process.env.NODE_ENV !== 'production') {
+        server.close(() => process.exit(1));
+    }
 });
