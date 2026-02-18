@@ -95,7 +95,7 @@ app.use(errorHandler);
 // Start server
 const PORT = process.env.PORT || 5000;
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
     server.listen(PORT, () => {
         console.log(`
 ╔═══════════════════════════════════════╗
@@ -113,7 +113,7 @@ export default app;
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
     console.error('❌ Unhandled Rejection:', err);
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
         server.close(() => process.exit(1));
     }
 });
